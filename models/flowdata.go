@@ -1,9 +1,14 @@
 package models
 
-import "time"
+import (
+	"time"
 
+	"github.com/jinzhu/gorm"
+)
+
+// FlowData model
 type FlowData struct {
-	ID         uint      `gorm:"primary_key" json:"id"`
+	gorm.Model
 	Timestamp  time.Time `json:"timestamp"`
 	FlowRate   float64   `json:"flow_rate"`
 	MeterID    string    `json:"meter_id"`
