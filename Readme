@@ -1,0 +1,138 @@
+# SyncronizeHub
+
+SyncronizeHub is a backend Golang application that integrates with PostgreSQL and Firebase for efficient data synchronization and management.
+
+## Table of Contents
+
+- [SyncronizeHub](#syncronizehub)
+  - [Table of Contents](#table-of-contents)
+  - [Project Structure](#project-structure)
+  - [Key Features](#key-features)
+  - [Getting Started](#getting-started)
+  - [Dependencies](#dependencies)
+  - [License](#license)
+
+## Project Structure
+
+```
+syncronizehub/
+|-- configs/
+|   |-- config.go
+|-- delivery/
+|   |-- controllers/
+|   |   |-- app_controller.go
+|   |   |-- login_controller.go
+|   |   |-- product_controller.go
+|   |   |-- user_controller.go
+|   |-- middleware/
+|   |   |-- auth_token_middleware.go
+|-- managers/
+|   |-- infra_manager.go
+|   |-- repo_manager.go
+|   |-- usecase_manager.go
+|-- models/
+|   |-- user.go
+|   |-- flow_data.go
+|-- repository/
+|   |-- user_repository.go
+|   |-- flow_data_repository.go
+|-- usecase/
+|   |-- user_usecase.go
+|   |-- flow_data_usecase.go
+|-- utils/
+|   |-- authenticator/
+|   |   |-- firebase.go
+|   |   |-- access_token.go
+|   |   |-- paseto.go
+|   |-- common_responses.go
+|   |-- generate_id.go
+|   |-- new_sql_null.go
+|   |-- raw_query.go
+|-- go.mod
+|-- main.go
+```
+
+## Key Features
+
+1. **Project Setup and Dependencies:**
+   - Organized as a Go module.
+   - Dependencies managed using the Go module system.
+
+2. **Model Definition:**
+   - Follows MVC architecture.
+   - Defines data models `User` and `FlowData` in the `models/` directory.
+
+3. **PostgreSQL Database Integration:**
+   - Establishes a connection to PostgreSQL using `database/sql` and `github.com/lib/pq`.
+   - Implements functions for database operations in `repository/` and `utils/`.
+
+4. **Firebase Integration:**
+   - Initializes the Firebase Admin SDK in `utils/authenticator/firebase.go`.
+   - Implements functions for user authentication, access authorization, and data synchronization.
+
+5. **PASETO Token Authentication:**
+   - Utilizes PASETO tokens for secure authentication.
+   - PASETO-related logic is implemented in `utils/authenticator/paseto.go`.
+
+6. **API Endpoints:**
+   - Defines RESTful API endpoints using Gorilla Mux in `delivery/controllers/` and `delivery/middleware/`.
+
+7. **Goroutine Handling:**
+   - Utilizes goroutines for concurrent database operations and Firebase interaction.
+
+8. **Security Measures:**
+   - Implements password hashing and salting.
+   - Recommends input sanitization and data validation.
+   - Encourages regular security updates and HTTPS usage.
+
+## Getting Started
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository-url>
+   ```
+
+2. Set up the necessary environment variables:
+
+   ```bash
+   # Example environment variables (modify as needed)
+   export DB_HOST=localhost
+   export DB_PORT=5432
+   export DB_USER=postgres
+   export DB_PASSWORD=LycoReco
+   export DB_NAME=syncronizehub
+   export DB_DRIVER=postgres
+   export API_HOST=localhost
+   export API_PORT=8080
+   export APP_NAME=SYNCronizeHUB
+   ```
+
+3. Run the application:
+
+   ```bash
+   go run main.go
+   ```
+
+## Dependencies
+
+- [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup) - Firebase Admin SDK for Go.
+- [Gorm](https://gorm.io) - The Go programming language SQL database ORM.
+- [pq](https://github.com/lib/pq) - Pure Go Postgres driver for database/sql.
+- [Gorilla Mux](https://github.com/gorilla/mux) - A powerful URL router and dispatcher for golang.
+- [Paseto](https://github.com/o1egl/paseto) - Platform-Agnostic Security Tokens.
+
+```go
+go get -u firebase.google.com/go@latest
+go get -u github.com/jinzhu/gorm@latest
+go get -u github.com/lib/pq@latest
+go get -u github.com/gorilla/mux@latest
+go get -u github.com/o1egl/paseto@latest
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```
+
+This README file includes instructions on installing the required dependencies using the `go get` command. Make sure to adjust the installation commands as needed, and it's always a good idea to use the latest stable versions of the dependencies.
