@@ -1,5 +1,3 @@
-// utils/generate_id.go
-
 package utils
 
 import (
