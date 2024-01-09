@@ -3,16 +3,28 @@
 package usecase
 
 import (
-	// Import necessary packages
-	// ...
+	"github.com/kvn-media/SyncronizeHub/models"
+	"github.com/kvn-media/SyncronizeHub/managers"
 )
 
-// UserUseCase contains use case logic for users
+// UserUseCase provides use cases for user-related operations
 type UserUseCase struct {
-	// Fields and dependencies
-	// ...
+	UserManager managers.UserManager
 }
 
-// User-related use case functions
-// ...
+// NewUserUseCase creates a new instance of UserUseCase
+func NewUserUseCase(userManager managers.UserManager) *UserUseCase {
+	return &UserUseCase{
+		UserManager: userManager,
+	}
+}
 
+// RegisterUser handles the user registration use case
+func (uc *UserUseCase) RegisterUser(name, email, password string) (*models.User, error) {
+	return uc.UserManager.RegisterUser(name, email, password)
+}
+
+// LoginUser handles the user login use case
+func (uc *UserUseCase) LoginUser(email, password string) (*models.User, error) {
+	return uc.UserManager.LoginUser(email, password)
+}
