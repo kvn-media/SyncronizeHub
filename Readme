@@ -1,134 +1,105 @@
 # SyncronizeHub
 
-SyncronizeHub is a backend Golang application that integrates with PostgreSQL and Firebase for efficient data synchronization and management.
-
-## Table of Contents
-
-- [SyncronizeHub](#syncronizehub)
-  - [Table of Contents](#table-of-contents)
-  - [Project Structure](#project-structure)
-  - [Key Features](#key-features)
-  - [Getting Started](#getting-started)
-  - [Dependencies](#dependencies)
-  - [License](#license)
+SyncronizeHub is a backend Golang application that integrates with PostgreSQL for database operations and Firebase for user authentication and data storage. The application follows a clean and modular architecture, adhering to best practices for readability, security, and performance.
 
 ## Project Structure
 
-```
-syncronizehub/
-|-- configs/
-|   |-- config.go
-|-- delivery/
-|   |-- controllers/
-|   |   |-- app_controller.go
-|   |   |-- login_controller.go
-|   |   |-- product_controller.go
-|   |   |-- user_controller.go
-|   |-- middleware/
-|   |   |-- auth_token_middleware.go
-|-- managers/
-|   |-- infra_manager.go
-|   |-- repo_manager.go
-|   |-- usecase_manager.go
-|-- models/
-|   |-- user.go
-|   |-- flow_data.go
-|-- repository/
-|   |-- user_repository.go
-|   |-- flow_data_repository.go
-|-- usecase/
-|   |-- user_usecase.go
-|   |-- flow_data_usecase.go
-|-- utils/
-|   |-- authenticator/
-|   |   |-- firebase.go
-|   |   |-- access_token.go
-|   |   |-- paseto.go
-|   |-- common_responses.go
-|   |-- generate_id.go
-|   |-- new_sql_null.go
-|   |-- raw_query.go
-|-- go.mod
-|-- main.go
-```
+The project is organized into several directories representing different components of the application:
 
-## Key Features
+- `configs/`: Configuration management.
+- `delivery/`: Contains controllers and middleware for handling HTTP requests.
+- `managers/`: Manages different aspects of the application, such as the database.
+- `models/`: Defines data models.
+- `repository/`: Handles database operations.
+- `usecase/`: Contains business logic.
+- `utils/`: Utility functions and common responses.
+  - `authenticator/`: Manages user authentication using PASETO tokens.
+- `go.mod`: Go module file.
+- `main.go`: Entry point of the application.
 
-1. **Project Setup and Dependencies:**
-   - Organized as a Go module.
-   - Dependencies managed using the Go module system.
+## Project Setup and Dependencies
 
-2. **Model Definition:**
-   - Follows MVC architecture.
-   - Defines data models `User` and `FlowData` in the `models/` directory.
+### Project Setup
 
-3. **PostgreSQL Database Integration:**
-   - Establishes a connection to PostgreSQL using `database/sql` and `github.com/lib/pq`.
-   - Implements functions for database operations in `repository/` and `utils/`.
+- Initialize a Go module:
 
-4. **Firebase Integration:**
-   - Initializes the Firebase Admin SDK in `utils/authenticator/firebase.go`.
-   - Implements functions for user authentication, access authorization, and data synchronization.
+  ```bash
+  go mod init github.com/yourusername/syncronizehub
+  ```
 
-5. **PASETO Token Authentication:**
-   - Utilizes PASETO tokens for secure authentication.
-   - PASETO-related logic is implemented in `utils/authenticator/paseto.go`.
+### Dependencies
 
-6. **API Endpoints:**
-   - Defines RESTful API endpoints using Gorilla Mux in `delivery/controllers/` and `delivery/middleware/`.
+Install the following dependencies:
 
-7. **Goroutine Handling:**
-   - Utilizes goroutines for concurrent database operations and Firebase interaction.
+- Firebase Admin SDK:
 
-8. **Security Measures:**
-   - Implements password hashing and salting.
-   - Recommends input sanitization and data validation.
-   - Encourages regular security updates and HTTPS usage.
+  ```bash
+  go get firebase.google.com/go
+  ```
 
-## Getting Started
+- Gorm (optional, use if preferred over database/sql):
 
-1. Clone the repository:
+  ```bash
+  go get gorm.io/gorm
+  ```
 
-   ```bash
-   git clone <repository-url>
-   ```
+- PostgreSQL driver:
 
-2. Set up the necessary environment variables:
+  ```bash
+  go get github.com/lib/pq
+  ```
 
-   ```bash
-   # Example environment variables (modify as needed)
-   export DB_HOST=localhost
-   export DB_PORT=5432
-   export DB_USER=postgres
-   export DB_PASSWORD=LycoReco
-   export DB_NAME=syncronizehub
-   export DB_DRIVER=postgres
-   export API_HOST=localhost
-   export API_PORT=8080
-   export APP_NAME=SYNCronizeHUB
-   ```
+- Gorilla Mux:
 
-3. Run the application:
+  ```bash
+  go get github.com/gorilla/mux
+  ```
 
-   ```bash
-   go run main.go
-   ```
+- PASETO:
 
-## Dependencies
+  ```bash
+  go get github.com/o1egl/paseto
+  ```
 
-- [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup) - Firebase Admin SDK for Go.
-- [Gorm](https://gorm.io) - The Go programming language SQL database ORM.
-- [pq](https://github.com/lib/pq) - Pure Go Postgres driver for database/sql.
-- [Gorilla Mux](https://github.com/gorilla/mux) - A powerful URL router and dispatcher for golang.
-- [Paseto](https://github.com/o1egl/paseto) - Platform-Agnostic Security Tokens.
+## Model Definition
 
-```go
-go get -u firebase.google.com/go@latest
-go get -u github.com/jinzhu/gorm@latest
-go get -u github.com/lib/pq@latest
-go get -u github.com/gorilla/mux@latest
-go get -u github.com/o1egl/paseto@latest
-```
+The application follows the MVC architecture with defined structs for data models:
+
+- `User`: Represents user data with fields for ID, name, email, and password.
+- `FlowData`: Represents flow data with fields for timestamp, flow rate, meter ID, and customer ID. The timestamp can be stored as Unix timestamps or strings for customization.
+
+## PostgreSQL Database Integration
+
+- Connection to the database is established using database/sql and github.com/lib/pq.
+- Functions are implemented for creating tables, inserting, updating, and deleting flow data, querying data based on customer ID and time format, generating CSV files, and query dump files.
+
+## Firebase Integration
+
+- The Firebase Admin SDK is initialized with project credentials.
+- Functions are implemented for authenticating users, authorizing access based on customer ID, and sending flow data to Firestore or Realtime Database in JSON format.
+
+## API Endpoints
+
+- Gorilla Mux is used to define RESTful API endpoints.
+- Endpoints include user registration and login, data retrieval for specific customers with time range filtering, and a CSV download endpoint.
+
+## Goroutine Handling
+
+- Goroutines are used for handling concurrent database operations and interacting with Firebase in the background, improving performance and responsiveness.
+
+## Security Measures
+
+- User passwords are hashed and salted before storing them in the database.
+- User inputs are sanitized to prevent SQL injection attacks.
+- Data received from Firebase is validated to ensure integrity.
+- Regular security updates for the OS, database, and Firebase SDK are recommended.
+- Consider using HTTPS for communication.
+- The mini PC is secured with strong passwords, firewalls, and access controls.
+
+## Testing and Deployment
+
+- Unit and integration tests are encouraged to ensure code quality and functionality.
+- Deploy the application to a suitable environment, such as a local server or a cloud platform.
 
 ## License
 
