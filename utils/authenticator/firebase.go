@@ -5,96 +5,70 @@ package authenticator
 import (
 	"context"
 	"fmt"
-	"log"
 
 	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
+	"firebase.google.com/go/db"
 	"google.golang.org/api/option"
 )
 
-// FirebaseAuthenticator represents the Firebase authentication utility.
-type FirebaseAuthenticator struct {
-	app *firebase.App
+// FirebaseManager handles Firebase authentication and database operations.
+type FirebaseManager struct {
+	authClient *auth.Client
+	dbClient   *db.Client
 }
 
-// NewFirebaseAuthenticator initializes a new Firebase authenticator.
-func NewFirebaseAuthenticator(ctx context.Context, credentialsFile string) (*FirebaseAuthenticator, error) {
-	opt := option.WithCredentialsFile(credentialsFile)
-	app, err := firebase.NewApp(ctx, nil, opt)
+// NewFirebaseManager creates a new instance of FirebaseManager.
+func NewFirebaseManager(credentialsFilePath string, databaseURL string) (*FirebaseManager, error) {
+	opt := option.WithCredentialsFile(credentialsFilePath)
+	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
-		return nil, fmt.Errorf("error initializing Firebase app: %v", err)
+		return nil, fmt.Errorf("failed to initialize Firebase app: %v", err)
 	}
 
-	return &FirebaseAuthenticator{app: app}, nil
+	authClient, err := app.Auth(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize Firebase Auth client: %v", err)
+	}
+
+	dbClient, err := app.DatabaseWithURL(context.Background(), databaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize Firebase Database client: %v", err)
+	}
+
+	return &FirebaseManager{
+		authClient: authClient,
+		dbClient:   dbClient,
+	}, nil
 }
 
-// GeneratePasetoToken creates a PASETO token for the user.
-func (fa *FirebaseAuthenticator) GeneratePasetoToken(uid string) (string, error) {
-	// Fetch user information from Firebase
-	user, err := fa.getUser(uid)
+// AuthenticateUser authenticates a user using Firebase Auth.
+func (fm *FirebaseManager) AuthenticateUser(email, password string) (string, error) {
+	params := (&auth.UserToCreate{}).
+		Email(email).
+		Password(password)
+	user, err := fm.authClient.CreateUser(context.Background(), params)
 	if err != nil {
-		return "", fmt.Errorf("error fetching user from Firebase: %v", err)
+		return "", fmt.Errorf("failed to authenticate user: %v", err)
 	}
 
-	// Create PASETO token claims
-	claims := map[string]interface{}{
-		"uid":   uid,
-		"email": user.Email,
-		// Add other relevant claims as needed
-	}
-
-	// Sign the PASETO token using a private key (replace with your implementation)
-	privateKey := getPrivateKey()
-
-	pasetoAuthenticator := NewPasetoAuthenticator(privateKey, nil) // Use the appropriate public key
-
-	// Generate PASETO token
-	token, err := pasetoAuthenticator.GenerateToken(claims)
+	token, err := fm.authClient.CustomToken(context.Background(), user.UID)
 	if err != nil {
-		return "", fmt.Errorf("error generating PASETO token: %v", err)
+		return "", fmt.Errorf("failed to generate custom token: %v", err)
 	}
 
 	return token, nil
 }
 
-// VerifyPasetoToken verifies the PASETO token and returns the user claims.
-func (fa *FirebaseAuthenticator) VerifyPasetoToken(token string) (map[string]interface{}, error) {
-	// Verify the PASETO token using the public key (replace with your implementation)
-	publicKey := getPublicKey()
-
-	pasetoAuthenticator := NewPasetoAuthenticator(nil, publicKey) // Use the appropriate private key
-
-	// Verify PASETO token
-	claims, err := pasetoAuthenticator.VerifyToken(token)
-	if err != nil {
-		return nil, fmt.Errorf("error verifying PASETO token: %v", err)
-	}
-
-	return claims, nil
+// AuthorizeUserAccess authorizes access based on the user's UID.
+func (fm *FirebaseManager) AuthorizeUserAccess(uid string) error {
+	// Your authorization logic here
+	// Example: Check user permissions or roles in Firebase Realtime Database
+	return nil
 }
 
-// getUser retrieves user information from Firebase using the provided UID.
-func (fa *FirebaseAuthenticator) getUser(uid string) (*auth.UserRecord, error) {
-	client, err := fa.app.Auth(context.Background())
-	if err != nil {
-		log.Fatalf("error getting Auth client: %v\n", err)
-	}
-
-	user, err := client.GetUser(context.Background(), uid)
-	if err != nil {
-		log.Fatalf("error fetching user data: %v\n", err)
-	}
-
-	return user, nil
-}
-
-// getPrivateKey retrieves the private key for signing PASETO tokens.
-// Replace this function with your actual private key retrieval logic.
-func getPrivateKey() ed25519.PrivateKey {
-	// Replace with your implementation
-}
-
-// getPublicKey retrieves the public key for verifying PASETO tokens.
-// Replace this function with your actual public key retrieval logic.
-func getPublicKey() ed25519.PublicKey {
-	// Replace with your implementation
+// SendFlowData sends flow data to Firebase.
+func (fm *FirebaseManager) SendFlowData(data map[string]interface{}) error {
+	// Your logic for sending flow data to Firebase
+	return nil
 }

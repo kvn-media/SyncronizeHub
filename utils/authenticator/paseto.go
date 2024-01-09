@@ -3,47 +3,51 @@
 package authenticator
 
 import (
-	"github.com/o1egl/paseto"
-	"golang.org/x/crypto/ed25519"
+	"fmt"
 	"time"
+
+	"github.com/o1egl/paseto"
 )
 
-// PasetoAuthenticator represents the PASETO authentication utility.
-type PasetoAuthenticator struct {
-	privateKey ed25519.PrivateKey
-	publicKey  ed25519.PublicKey
+// PasetoManager handles PASETO token operations.
+type PasetoManager struct {
+	symmetricKey []byte
 }
 
-// NewPasetoAuthenticator initializes a new PASETO authenticator.
-func NewPasetoAuthenticator(privateKey ed25519.PrivateKey, publicKey ed25519.PublicKey) *PasetoAuthenticator {
-	return &PasetoAuthenticator{privateKey: privateKey, publicKey: publicKey}
+// NewPasetoManager creates a new instance of PasetoManager.
+func NewPasetoManager(symmetricKey []byte) *PasetoManager {
+	return &PasetoManager{
+		symmetricKey: symmetricKey,
+	}
 }
 
-// GenerateToken creates a PASETO token with the provided claims.
-func (pa *PasetoAuthenticator) GenerateToken(claims map[string]interface{}) (string, error) {
-	v2 := paseto.NewV2()
-	now := time.Now()
+// GenerateToken generates a PASETO token for the given subject and expiration time.
+func (pm *PasetoManager) GenerateToken(subject string, expiration time.Time) (string, error) {
+	claims := map[string]interface{}{
+		"sub": subject,
+		"exp": expiration.Unix(),
+	}
 
-	// Set expiration to 1 hour from now
-	expiration := now.Add(time.Hour)
-
-	token, err := v2.Encrypt(pa.privateKey, claims, paseto.Expiration(expiration))
+	token, err := paseto.NewV2().Encrypt(pm.symmetricKey, claims, nil)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error generating PASETO token: %v", err)
 	}
 
 	return token, nil
 }
 
-// VerifyToken verifies the PASETO token and returns the claims.
-func (pa *PasetoAuthenticator) VerifyToken(token string) (map[string]interface{}, error) {
-	v2 := paseto.NewV2()
-
+// VerifyToken verifies the authenticity of a PASETO token.
+func (pm *PasetoManager) VerifyToken(token string) (string, error) {
 	var claims map[string]interface{}
-	err := v2.Decrypt(token, pa.publicKey, &claims, nil)
+	err := paseto.NewV2().Decrypt(token, pm.symmetricKey, &claims, nil)
 	if err != nil {
-		return nil, err
+		return "", fmt.Errorf("error verifying PASETO token: %v", err)
 	}
 
-	return claims, nil
+	subject, ok := claims["sub"].(string)
+	if !ok {
+		return "", fmt.Errorf("missing or invalid subject in PASETO token")
+	}
+
+	return subject, nil
 }
