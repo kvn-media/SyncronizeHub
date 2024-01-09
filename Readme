@@ -1,105 +1,92 @@
 # SyncronizeHub
 
-SyncronizeHub is a backend Golang application that integrates with PostgreSQL for database operations and Firebase for user authentication and data storage. The application follows a clean and modular architecture, adhering to best practices for readability, security, and performance.
+SyncronizeHub is a Golang backend application designed for handling synchronization and data flow between PostgreSQL and Firebase.
 
 ## Project Structure
 
-The project is organized into several directories representing different components of the application:
+```
+syncronizehub/
+|-- configs/
+|-- delivery/
+|   |-- controllers/
+|   |-- middleware/
+|-- managers/
+|-- models/
+|-- repository/
+|-- usecase/
+|-- utils/
+|   |-- authenticator/
+|-- go.mod
+|-- main.go
+```
 
-- `configs/`: Configuration management.
-- `delivery/`: Contains controllers and middleware for handling HTTP requests.
-- `managers/`: Manages different aspects of the application, such as the database.
-- `models/`: Defines data models.
-- `repository/`: Handles database operations.
-- `usecase/`: Contains business logic.
-- `utils/`: Utility functions and common responses.
-  - `authenticator/`: Manages user authentication using PASETO tokens.
-- `go.mod`: Go module file.
-- `main.go`: Entry point of the application.
+## Dependencies
 
-## Project Setup and Dependencies
+- `github.com/jinzhu/gorm`: GORM is used as the Object Relational Mapper for PostgreSQL integration.
+- `github.com/lib/pq`: The PostgreSQL driver for GORM.
+- `github.com/gorilla/mux`: Gorilla Mux is utilized for routing and handling HTTP requests.
+- `firebase-admin-go`: Firebase Admin SDK for handling authentication and data synchronization.
 
-### Project Setup
+## Getting Started
 
-- Initialize a Go module:
+1. Clone the repository.
+2. Set up your PostgreSQL database and configure the connection string in the code.
+3. Initialize Firebase Admin SDK with your project credentials.
+4. Run the application.
 
-  ```bash
-  go mod init github.com/yourusername/syncronizehub
-  ```
+## Features
 
-### Dependencies
-
-Install the following dependencies:
-
-- Firebase Admin SDK:
-
-  ```bash
-  go get firebase.google.com/go
-  ```
-
-- Gorm (optional, use if preferred over database/sql):
-
-  ```bash
-  go get gorm.io/gorm
-  ```
-
-- PostgreSQL driver:
-
-  ```bash
-  go get github.com/lib/pq
-  ```
-
-- Gorilla Mux:
-
-  ```bash
-  go get github.com/gorilla/mux
-  ```
-
-- PASETO:
-
-  ```bash
-  go get github.com/o1egl/paseto
-  ```
-
-## Model Definition
-
-The application follows the MVC architecture with defined structs for data models:
-
-- `User`: Represents user data with fields for ID, name, email, and password.
-- `FlowData`: Represents flow data with fields for timestamp, flow rate, meter ID, and customer ID. The timestamp can be stored as Unix timestamps or strings for customization.
-
-## PostgreSQL Database Integration
-
-- Connection to the database is established using database/sql and github.com/lib/pq.
-- Functions are implemented for creating tables, inserting, updating, and deleting flow data, querying data based on customer ID and time format, generating CSV files, and query dump files.
-
-## Firebase Integration
-
-- The Firebase Admin SDK is initialized with project credentials.
-- Functions are implemented for authenticating users, authorizing access based on customer ID, and sending flow data to Firestore or Realtime Database in JSON format.
+- User registration and login via RESTful API.
+- CRUD operations for flow data.
+- Integration with PostgreSQL for data storage.
+- Firebase authentication and data synchronization.
 
 ## API Endpoints
 
-- Gorilla Mux is used to define RESTful API endpoints.
-- Endpoints include user registration and login, data retrieval for specific customers with time range filtering, and a CSV download endpoint.
-
-## Goroutine Handling
-
-- Goroutines are used for handling concurrent database operations and interacting with Firebase in the background, improving performance and responsiveness.
+- `/register`: User registration endpoint.
+- `/login`: User login endpoint.
+- `/flowdata/insert`: Insert flow data.
+- `/flowdata/update`: Update flow data.
+- `/flowdata/delete`: Delete flow data.
 
 ## Security Measures
 
-- User passwords are hashed and salted before storing them in the database.
-- User inputs are sanitized to prevent SQL injection attacks.
-- Data received from Firebase is validated to ensure integrity.
-- Regular security updates for the OS, database, and Firebase SDK are recommended.
-- Consider using HTTPS for communication.
-- The mini PC is secured with strong passwords, firewalls, and access controls.
+- Hashing and salting user passwords.
+- Sanitizing user inputs to prevent SQL injection attacks.
+- Regular security updates for OS, database, and Firebase SDK.
+- HTTPS communication.
 
-## Testing and Deployment
+## Contributors
 
-- Unit and integration tests are encouraged to ensure code quality and functionality.
-- Deploy the application to a suitable environment, such as a local server or a cloud platform.
+- Muhammad Kevin
+
+Feel free to contribute and make SyncronizeHub even more awesome!
+
+```
+
+**Topology Diagram**
+
+```
+                        +-------------+
+                        | PostgreSQL  |
+                        |    Database |
+                        +------+------+
+                               |
+            +------------------v------------------+
+            |               SyncronizeHub           |
+            |   +----------------+   +------------+ |
+            |   |   Controllers  |   | Middleware | |
+            |   +----------------+   +------------+ |
+            |   |   Use Cases    |   |   Utils    | |
+            |   +----------------+   +------------+ |
+            |         |                    |        |
+            +---------|--------------------|--------+
+                      v                    v
+            +-------------------+ +------------------+
+            |      GORM         | |  Firebase Admin  |
+            | PostgreSQL Driver | |      SDK         |
+            +-------------------+ +------------------+
+```
 
 ## License
 
