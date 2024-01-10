@@ -90,7 +90,7 @@ Feel free to contribute and make SyncronizeHub even more awesome!
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
+This project is licensed under the MIT License - see the [LICENSE](license) file for details.
+
 
 This README file includes instructions on installing the required dependencies using the `go get` command. Make sure to adjust the installation commands as needed, and it's always a good idea to use the latest stable versions of the dependencies.
