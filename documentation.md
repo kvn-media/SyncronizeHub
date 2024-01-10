@@ -153,7 +153,7 @@ type FlowData struct {
 - [x] Project setup and dependencies.
 - [x] Model definition.
 - [x] PostgreSQL database integration.
-- [x] Firebase integration.
+- [ ] Firebase integration.
 - [x] API endpoints.
 - [x] Goroutine handling.
 - [x] Security measures.
