@@ -62,6 +62,8 @@ SyncronizeHub/
    go get firebase.google.com/go
    go get gorm.io/gorm
    go get github.com/gorilla/mux
+   go get golang-jwt
+   go get golang.org/x/crypto/bcrypt
    ```
 
 ### Model Definition
