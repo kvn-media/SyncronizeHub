@@ -67,3 +67,6 @@ func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // Add more controller functions as needed for your project
+func (uc *UserController) PublicEndpoint(w http.ResponseWriter, r *http.Request) {
+	
+}

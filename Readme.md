@@ -25,7 +25,10 @@ syncronizehub/
 - `github.com/jinzhu/gorm`: GORM is used as the Object Relational Mapper for PostgreSQL integration.
 - `github.com/lib/pq`: The PostgreSQL driver for GORM.
 - `github.com/gorilla/mux`: Gorilla Mux is utilized for routing and handling HTTP requests.
+- `github.com/golang-jwt/jwt/v4`: JWT (JSON Web Tokens) package for handling authentication tokens.
+- `golang.org/x/crypto/bcrypt`: Package for secure password hashing using the bcrypt algorithm.
 - `firebase-admin-go`: Firebase Admin SDK for handling authentication and data synchronization.
+
 
 ## Getting Started
 
@@ -56,23 +59,15 @@ syncronizehub/
 - Regular security updates for OS, database, and Firebase SDK.
 - HTTPS communication.
 
-## Contributors
-
-- Muhammad Kevin
-
-Feel free to contribute and make SyncronizeHub even more awesome!
+## Project Topology
 
 ```
-
-**Topology Diagram**
-
-```
-                        +-------------+
-                        | PostgreSQL  |
-                        |    Database |
-                        +------+------+
-                               |
-            +------------------v------------------+
+                          +-------------+
+                          | PostgreSQL  |
+                          |    Database |
+                          +------+------+
+                                 |
+            +--------------------v------------------+
             |               SyncronizeHub           |
             |   +----------------+   +------------+ |
             |   |   Controllers  |   | Middleware | |
@@ -88,7 +83,14 @@ Feel free to contribute and make SyncronizeHub even more awesome!
             +-------------------+ +------------------+
 ```
 
-## License
+## Contributors
+
+- Muhammad Kevin
+
+Feel free to contribute and make SyncronizeHub even more awesome!
+
+
+**License**
 
 This project is licensed under the MIT License - see the [LICENSE](license) file for details.
 
