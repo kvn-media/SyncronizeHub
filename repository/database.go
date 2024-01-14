@@ -15,7 +15,9 @@ import (
 var DB *gorm.DB
 
 // InitDB initializes the database connection
-func InitDB() {
+func InitDB(connection config.Config) (*gorm.DB, error) {
+	db, _ := gorm.Open("postgres", connection)
+
 	cfg := config.NewConfig()
 
 	// Build the database connection string
@@ -34,14 +36,16 @@ func InitDB() {
 	DB.DB().SetMaxOpenConns(100)
 
 	// AutoMigrate to create tables
-	err = autoMigrateTables()
+	err = AutoMigrateTables()
 	if err != nil {
 		log.Fatalf("Error auto migrating tables: %v", err)
 	}
+
+	return db, nil
 }
 
 // AutoMigrateTables automigrates the tables
-func autoMigrateTables() error {
+func AutoMigrateTables() error {
 	// Migrate models to the database
 	err := DB.AutoMigrate(&models.User{}, &models.FlowData{}).Error
 	if err != nil {
